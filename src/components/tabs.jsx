@@ -15,7 +15,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
+import { ControlsDocs, FrameworksDocs } from '../regolibrary-utils/docs.tsx';
 
 // js-yaml is a library for parsing YAML
 const severity_map = { 1: 'Low', 2: 'Low', 3: 'Low', 4: 'Medium', 5: 'Medium', 6: 'Medium', 7: 'High', 8: 'High', 9: 'Critical', 10: 'Critical' };
@@ -156,18 +156,12 @@ export default function BasicTabs({ library, onSelect }) {
 
 
     // Control and framework options
-    const controlsOptions = useMemo(() => { 
+    const controlsOptions = useMemo(() => {
         const entries = Object.entries(library.controls).map(([k, v]) => ({ controlID: k, name: v.name }))
         entries.sort((a, b) => a.controlID.localeCompare(b.controlID));
         return entries;
     });
     const frameworksOptions = useMemo(() => { return Object.entries(library.frameworks).map(([k, v]) => ({ frameworkID: k, name: v.name })) });
-
-    const handleChange = () => {
-        const typ = valToType[tabNum];
-        console.log("handle selection change", typ, selectedControl, selectedFramework);
-
-    };
 
 
     const handleTabChange = (event, newTabNum) => {
@@ -225,10 +219,7 @@ export default function BasicTabs({ library, onSelect }) {
     } else {
         // Controls explanation
         controlInfo = (
-            <div>
-                Controls are the building blocks of the framework. They are the tests that are run on the system. Each control has a unique ID and a name. The ID is used to reference the control in the framework. The name is used to display the control in the UI.
-                Please select a control from the list to see more information about it.
-            </div>
+            controlInfo = <MarkdownPreview warpperElement={{ "data-color-mode": "light" }} source={ControlsDocs} />
         )
     }
 
@@ -236,13 +227,8 @@ export default function BasicTabs({ library, onSelect }) {
     if (selectedFramework && selectedFramework.frameworkID in library.frameworks) {
         frameworkInfo = <MarkdownPreview warpperElement={{ "data-color-mode": "light" }} source={generateFrameworkReadme(library.frameworks[selectedFramework.frameworkID])} />
     } else {
-        // Frameworks explanation
-        frameworkInfo = (
-            <div>
-                Frameworks are the tests that are run on the system. Each framework has a unique ID and a name. The ID is used to reference the framework in the system. The name is used to display the framework in the UI.
-                Please select a framework from the list to see more information about it.
-            </div>
-        )
+        frameworkInfo = <MarkdownPreview warpperElement={{ "data-color-mode": "light" }} source={FrameworksDocs} />
+
     }
 
 
