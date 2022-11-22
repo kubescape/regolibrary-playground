@@ -38,21 +38,23 @@ const KubescapeRegoLibrary = ({ }) => {
     const handleResults = (results) => {
         console.log("handleResults", results, target);
         setResult(results);
+        var status = "Pass";
         if (target.scope === "frameworks") {
             for (const control in results.result) {
                 if (control.results.lenght > 0) {
-                    setStatus("Fail");
+                    status = "Fail";
                     break;
                 }
             }
         }
 
         if (target.scope === "controls") {
-
             if (results.results.length > 0) {
-                setStatus("Fail");
+                status = "Fail";
             }
         }
+
+        setStatus(status);
     }
 
     const onEval = (input) => {
@@ -73,7 +75,7 @@ const KubescapeRegoLibrary = ({ }) => {
     }
 
     return (
-        <Box 
+        <Box
             sx={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -85,12 +87,31 @@ const KubescapeRegoLibrary = ({ }) => {
                 library={lib.library}
                 onSelect={onTargetChange}
             />
-            <CodeEditor
-            onExec={onEval}
-            status={status}
-            />
-        </Box>
+            <Box
+                sx={{
+                    width: '100%',
+                    padding: 2,
+                }}
+            >
 
+                <Box
+                    sx={{
+                        // fixed position
+                        position: 'fixed',
+                        top: 20,
+                        right: 20,
+                        zIndex: 1000,
+
+                    }}
+                >
+
+                    <CodeEditor
+                        onExec={onEval}
+                        status={status}
+                    />
+                </Box>
+            </Box>
+        </Box>
     )
 }
 

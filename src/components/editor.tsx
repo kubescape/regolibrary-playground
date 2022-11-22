@@ -70,18 +70,31 @@ CodeEditor.defaultProps = {
         "apiVersion": "v1",
         "kind": "Pod",
         "metadata": {
-            "name": "audit-pod",
-            "labels": {
-                "app": "audit-pod"
-            }
+            "name": "frontend"
         },
         "spec": {
             "containers": [
                 {
-                    "name": "test-container",
-                    "image": "hashicorp/http-echo:0.2.3",
-                    "securityContext": {
-                        "allowPrivilegeEscalation": false
+                    "name": "app",
+                    "image": "images.my-company.example/app:v4",
+                    "resources": {
+                        "requests": {
+                            "memory": "64Mi",
+                            "cpu": "250m"
+                        },
+                        "limits": {
+                            "memory": "128Mi",
+                            "cpu": "500m"
+                        }
+                    }
+                },
+                {
+                    "name": "log-aggregator",
+                    "image": "images.my-company.example/log-aggregator:v6",
+                    "resources": {
+                        "limits": {
+                            "memory": "128Mi"
+                        }
                     }
                 }
             ]
@@ -157,9 +170,8 @@ function CodeEditor({ onExec, onChange, value, lang, status }) {
         >
             <Box >
                 <Editor
-                    height="75vh"
-                    width="100vh"
-                    defaultValue={value}
+                    height="70vh"
+                    width="80vh"
                     language={language}
                     value={code}
                     onChange={(value) => setCode(value)}

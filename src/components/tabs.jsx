@@ -30,12 +30,33 @@ const generateControlReadme = (control) => {
     } else {
         md_text += `${control.description}\n`;
     }
-    md_text += '## What does this control test\n';
-    var test = control.description;
+
     if (control.test) {
-        test = control.test;
+        md_text += '## What does this control test\n';
+        md_text += `${control.test}\n`;
+
     }
-    md_text += `${test}\n`;
+
+    if (control.manual_test) {
+        md_text += '## How to check it manually\n';
+        md_text += `${control.manual_test}\n`;
+    }
+
+    if (control.impact_statement) {
+        md_text += '## Impact Statement\n';
+        md_text += `${control.impact_statement}\n`;
+    }
+
+    if (control.default_value) {
+        md_text += '## Default Value\n';
+        md_text += `${control.default_value}\n`;
+    }
+
+
+
+    md_text += '## Remediation\n';
+    md_text += `${control.remediation}\n`;
+
 
     return md_text;
 }
@@ -64,13 +85,14 @@ function ItemSelect({ options, value, onChange, name, getOptionLabel }) {
         options={options}
         sx={{ width: 300 }}
         getOptionLabel={getOptLabel}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         renderInput={(params) => <TextField {...params} label={name} variant="outlined" />}
     />
 }
 
 ItemSelect.propTypes = {
     options: PropTypes.array.isRequired,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     sx: PropTypes.object,
     name: PropTypes.string.isRequired,
@@ -134,7 +156,11 @@ export default function BasicTabs({ library, onSelect }) {
 
 
     // Control and framework options
-    const controlsOptions = useMemo(() => { return Object.entries(library.controls).map(([k, v]) => ({ controlID: k, name: v.name })) });
+    const controlsOptions = useMemo(() => { 
+        const entries = Object.entries(library.controls).map(([k, v]) => ({ controlID: k, name: v.name }))
+        entries.sort((a, b) => a.controlID.localeCompare(b.controlID));
+        return entries;
+    });
     const frameworksOptions = useMemo(() => { return Object.entries(library.frameworks).map(([k, v]) => ({ frameworkID: k, name: v.name })) });
 
     const handleChange = () => {
