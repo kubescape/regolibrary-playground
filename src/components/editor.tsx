@@ -13,6 +13,7 @@ import * as jsyaml from 'js-yaml';
 import ReactResizeDetector from 'react-resize-detector';
 import { MonacoDiffEditor } from 'react-monaco-editor';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import Chip from '@mui/material/Chip';
 
 function LanguageSelect({ options, value, onChange }) {
     const [val, setValue] = React.useState(value);
@@ -186,7 +187,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     } else {
         editor = <MonacoDiffEditor
             height="70vh"
-            width="80vh"
+            width="50vh"
             value={fix}
             original={code}
             language={language}
@@ -212,7 +213,13 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
         )
     }
 
-
+    var statusBadge = <div></div>;
+    if (status) {
+        var color = "warning"
+        if (status == "Pass") { color = "success" }
+        if (status == "Fail") { color = "error" }
+        statusBadge = <Chip label={status} color={color} />
+    }
 
     return (
         <Paper
@@ -222,8 +229,6 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
                 justifyContent: 'space-between',
                 p: 2,
                 height: "100%",
-
-                // shadow
                 boxShadow: 10,
             }}
         >
@@ -234,6 +239,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
+                    alignItems:'center',
                     p: 2,
                 }}
             >
@@ -242,7 +248,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
                     value={"json"}
                     onChange={handleLanguageChange}
                 />
-                <p>Status: {status}</p>
+                {statusBadge}
                 {actionButton}
             </Box>
         </Paper>

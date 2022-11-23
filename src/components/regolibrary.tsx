@@ -79,6 +79,7 @@ const KubescapeRegoLibrary = ({ }) => {
 
     const onTargetChange = (target) => {
         console.log("target changed", target);
+        setStatus("");
         setTarget(target);
     }
 
