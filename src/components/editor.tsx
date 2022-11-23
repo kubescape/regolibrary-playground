@@ -187,7 +187,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     } else {
         editor = <MonacoDiffEditor
             height="70vh"
-            width="50vh"
+            width="80vh"
             value={fix}
             original={code}
             language={language}
