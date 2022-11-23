@@ -105,7 +105,7 @@ CodeEditor.defaultProps = {
         }
     },
     onChange: () => { },
-    onExec: () => { },
+    onExec: null,
     onApplyChange: () => { },
 }
 
@@ -168,6 +168,9 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
 
     // Excute button handler
     const handleExcute = () => {
+        if (onExec == null){
+            return;
+        }
         if (fix) {
             onExec(decode(fix));
         } else {
@@ -196,7 +199,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     }
 
     var actionButton = (
-        <Fab color="primary" aria-label="exec" >
+        <Fab disabled={onExec == null} color="primary" aria-label="exec" >
             <FlipIcom onClick={() => handleExcute()} />
         </Fab>
     )

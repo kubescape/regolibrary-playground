@@ -184,7 +184,7 @@ const KubescapeRegoLibrary = ({ }) => {
                 >
 
                     <CodeEditor
-                        onExec={onEval}
+                        onExec={(target.scope && target.value) ? onEval: null}
                         onApplyChanges={onApplyFix}
                         status={status}
                         fixed={fix}
