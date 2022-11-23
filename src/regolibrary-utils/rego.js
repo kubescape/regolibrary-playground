@@ -2,10 +2,10 @@ import { loadPolicy } from "@open-policy-agent/opa-wasm";
 const pako = require("pako");
 const untar = require("js-untar");
 
-// const bundle_url = "https://cors-anywhere.herokuapp.com/https://github.com/shm12/regolibrary/releases/download/v1.0.51/kubescape_regolibrary_bundle_wasm.tar.gz";
+const release_url = "https://cors-anywhere.herokuapp.com/https://github.com/shm12/regolibrary/releases/download/v1.0.51";
 
 // const release_url = "https://github.com/shm12/regolibrary/releases/latest/download";
-const release_url = "http://localhost:54848";
+// const release_url = "http://localhost:54848";
 // const release_url = "http://github.com/shm12/regolibrary/releases/download/v1.0.51/";
 const bundle_url = release_url + "/kubescape_regolibrary_bundle_wasm.tar.gz";
 
@@ -17,6 +17,11 @@ const deny_rule = "deny";
 const raw_rule = "raw";
 const filter_rule = "filter";
 
+
+async function myFetch(url) {
+  const response = await fetch(url, {headers: {'X-Requested-With': 'https://github.com'}});
+  return response;
+}
 
 async function NewLibrary() {
   var l = new Library();
@@ -46,9 +51,9 @@ export class Library {
   }
 
   async load_metadata() {
-    const frameworks = await fetch(release_url + `/${frameworks_prefix}.json`)
+    const frameworks = await myFetch(release_url + `/${frameworks_prefix}`)
       .then(response => response.json());
-    const controls = await fetch(release_url + `/${controls_prefix}.json`)
+    const controls = await myFetch(release_url + `/${controls_prefix}`)
       .then(response => response.json());
 
     for (var control of controls) {
@@ -85,7 +90,7 @@ export class Library {
   }
 
   async load() {
-    const response = await fetch(bundle_url,);
+    const response = await myFetch(bundle_url,);
     const buffer = await response.arrayBuffer();
     const tar = pako.inflate(buffer);
     const files = await untar(tar.buffer);

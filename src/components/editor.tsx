@@ -11,7 +11,8 @@ import Fab from '@mui/material/Fab';
 import PropTypes from 'prop-types';
 import * as jsyaml from 'js-yaml';
 import ReactResizeDetector from 'react-resize-detector';
-
+import { MonacoDiffEditor } from 'react-monaco-editor';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 function LanguageSelect({ options, value, onChange }) {
     const [val, setValue] = React.useState(value);
@@ -62,6 +63,8 @@ CodeEditor.propTypes = {
     onChange: PropTypes.func.isRequired,
     onExec: PropTypes.func.isRequired,
     value: PropTypes.any.isRequired,
+    fix: PropTypes.any,
+    onApplyChange: PropTypes.func,
 }
 
 CodeEditor.defaultProps = {
@@ -101,10 +104,11 @@ CodeEditor.defaultProps = {
         }
     },
     onChange: () => { },
-    onExec: () => { }
+    onExec: () => { },
+    onApplyChange: () => { },
 }
 
-function CodeEditor({ onExec, onChange, value, lang, status }) {
+function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChanges }) {
     const decode = (code) => {
         if (language === "json") {
             return JSON.parse(code);
@@ -124,8 +128,14 @@ function CodeEditor({ onExec, onChange, value, lang, status }) {
     }
 
     const [code, setCode] = React.useState(encode(value, lang));
+    const [fix, setFix] = React.useState(null);
     const [language, setLanguage] = React.useState(lang);
 
+    if (fixed && !fix) {
+        setFix(encode(fixed, language));
+    }
+    console.log("fix", fix);
+    console.log("fixed", fixed);
     // language selection buttons
     const languages = [
         "json",
@@ -146,6 +156,9 @@ function CodeEditor({ onExec, onChange, value, lang, status }) {
         console.log("changing lang from", language, "to", value);
         try {
             setCode(encode(decode(code), value));
+            if (fix) {
+                setFix(encode(decode(fix), value));
+            }
         } catch (e) {
             console.log(e);
         }
@@ -154,9 +167,52 @@ function CodeEditor({ onExec, onChange, value, lang, status }) {
 
     // Excute button handler
     const handleExcute = () => {
-        console.log("handleExcute", code);
-        onExec(decode(code));
+        if (fix) {
+            onExec(decode(fix));
+        } else {
+            onExec(decode(code));
+        }
     };
+
+    var editor = <div></div>;
+    if (!fix) {
+        editor = <Editor
+            height="70vh"
+            width="80vh"
+            language={language}
+            value={code}
+            onChange={(value) => setCode(value)}
+        />
+    } else {
+        editor = <MonacoDiffEditor
+            height="70vh"
+            width="80vh"
+            value={fix}
+            original={code}
+            language={language}
+            onChange={(value) => setFix(value)}
+        />
+    }
+
+    var actionButton = (
+        <Fab color="primary" aria-label="exec" >
+            <FlipIcom onClick={() => handleExcute()} />
+        </Fab>
+    )
+
+    if (fix) {
+        actionButton = (
+            <Fab color="success" aria-label="exec" >
+                <DoneAllIcon onClick={() => {
+                    setCode(fix);
+                    setFix(null);
+                    onApplyChanges(decode(fix));
+                }} />
+            </Fab>
+        )
+    }
+
+
 
     return (
         <Paper
@@ -166,16 +222,13 @@ function CodeEditor({ onExec, onChange, value, lang, status }) {
                 justifyContent: 'space-between',
                 p: 2,
                 height: "100%",
+
+                // shadow
+                boxShadow: 10,
             }}
         >
             <Box >
-                <Editor
-                    height="70vh"
-                    width="80vh"
-                    language={language}
-                    value={code}
-                    onChange={(value) => setCode(value)}
-                />
+                {editor}
             </Box>
             <Box
                 sx={{
@@ -190,9 +243,7 @@ function CodeEditor({ onExec, onChange, value, lang, status }) {
                     onChange={handleLanguageChange}
                 />
                 <p>Status: {status}</p>
-                <Fab color="primary" aria-label="exec">
-                    <FlipIcom onClick={() => handleExcute()} />
-                </Fab>
+                {actionButton}
             </Box>
         </Paper>
     );
