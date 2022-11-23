@@ -9,37 +9,18 @@ import { useState } from "react";
 import { Library } from "../regolibrary-utils/rego";
 import { JSONPath } from 'jsonpath-plus';
 import { Typography } from "@mui/material";
+import recursiveJsonPatch from '../regolibrary-utils/jsonpathc'
 
 interface Lib {
     library: Library;
 }
 
 function patchObject(obj: any, path: string, value: any) {
-    const currentVal = JSONPath({ path: path, json: obj });
-    const exist = Boolean(currentVal.length);
-
-
-    var p = path;
-    p = p.replace(/\./g, '/');
-    p = p.replace(/\[/g, '/');
-    p = p.replace(/\]/g, '/');
-    p = p.replace(/\/\//g, '/');
-    p = `/${p}`
-
-    var currentval = JSONPath({ path: p, json: obj });
-    var patchArgs = {
-        op: exist ? "replace" : "add",
-        path: p,
-        value: value
-    }
-
-    var copy = structuredClone(obj);
     try {
-        const r = jsonpatch.applyPatch(copy, [patchArgs]);
-        return r.newDocument;
-    } catch (e) {
-        console.log(e);
-        return obj;
+        const fixed = recursiveJsonPatch(obj, path, value);
+        return fixed;
+    } catch(e){
+        console.log("Failed to path object: ", obj, path, value);
     }
 }
 
@@ -52,7 +33,7 @@ const KubescapeRegoLibrary = ({ }) => {
 
     const [lib, setLibrary] = useState<Lib>({ library: new Library() });
     const [result, setResult] = useState({});
-    const [status, setStatus] = useState("Pass");
+    const [status, setStatus] = useState("");
     const [fix, setFix] = useState(null);
     const [loadError, setLoadError] = useState(null);
 
