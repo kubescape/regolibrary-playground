@@ -10,10 +10,20 @@ import FlipIcom from '@mui/icons-material/Flip';
 import Fab from '@mui/material/Fab';
 import PropTypes from 'prop-types';
 import * as jsyaml from 'js-yaml';
-import ReactResizeDetector from 'react-resize-detector';
 import { MonacoDiffEditor } from 'react-monaco-editor';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import Chip from '@mui/material/Chip';
+import { loader } from "@monaco-editor/react";
+import K8Schema from './k8s-schema.json';
+
+
+// Json k8s schema
+loader.init().then(monaco => {
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        schemas: K8Schema,
+    });
+});
 
 function LanguageSelect({ options, value, onChange }) {
     const [val, setValue] = React.useState(value);
@@ -62,7 +72,7 @@ LanguageSelect.defaultProps = {
 CodeEditor.propTypes = {
     lang: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    onExec: PropTypes.func.isRequired,
+    onExec: PropTypes.func,
     value: PropTypes.any.isRequired,
     fix: PropTypes.any,
     onApplyChange: PropTypes.func,
@@ -135,22 +145,12 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     if (fixed && !fix) {
         setFix(encode(fixed, language));
     }
-    console.log("fix", fix);
-    console.log("fixed", fixed);
+
     // language selection buttons
     const languages = [
         "json",
         "yaml",
     ];
-
-    const statusToColor = {
-        "Pass": 'primary.green',
-        // "Fail": window.theme.palette.error.main,
-        // "Warn": window.theme.palette.warning.main,
-        // "Info": window.theme.palette.info.main,
-    }
-
-
 
     // language selection handler
     const handleLanguageChange = (value) => {
@@ -168,7 +168,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
 
     // Excute button handler
     const handleExcute = () => {
-        if (onExec == null){
+        if (onExec == null) {
             return;
         }
         if (fix) {
@@ -242,7 +242,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems:'center',
+                    alignItems: 'center',
                     p: 2,
                 }}
             >

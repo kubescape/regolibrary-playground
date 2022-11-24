@@ -1,13 +1,11 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
+import bundle_url from "./bin/kubescape_regolibrary_bundle_wasm.tar.gz";
+import frameworks_metadata from "./bin/frameworks.json";
+import controls_metadata from "./bin/controls.json";
+
 const pako = require("pako");
 const untar = require("js-untar");
 
-const release_url = "https://cors-anywhere.herokuapp.com/https://github.com/shm12/regolibrary/releases/download/v1.0.51";
-
-// const release_url = "https://github.com/shm12/regolibrary/releases/latest/download";
-// const release_url = "http://localhost:54848";
-// const release_url = "http://github.com/shm12/regolibrary/releases/download/v1.0.51/";
-const bundle_url = release_url + "/kubescape_regolibrary_bundle_wasm.tar.gz";
 
 const regolibrary_prefix = "armo_builtins";
 const rules_prefix = "rules";
@@ -51,10 +49,8 @@ export class Library {
   }
 
   async load_metadata() {
-    const frameworks = await myFetch(release_url + `/${frameworks_prefix}`)
-      .then(response => response.json());
-    const controls = await myFetch(release_url + `/${controls_prefix}`)
-      .then(response => response.json());
+    const frameworks = frameworks_metadata;
+    const controls = controls_metadata;
 
     for (var control of controls) {
       const normalized = Library._normalize_rule_name(control.id);
