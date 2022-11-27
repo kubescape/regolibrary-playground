@@ -2,15 +2,12 @@ import CodeEditor from "./editor.tsx";
 import BasicTabs from "./tabs";
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import * as jsonpatch from 'fast-json-patch';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { useState } from "react";
 import { Library } from "../regolibrary-utils/rego";
-import { JSONPath } from 'jsonpath-plus';
 import { Typography } from "@mui/material";
-import recursiveJsonPatch from '../regolibrary-utils/jsonpathc'
-
+import recursiveJsonPatch from '../regolibrary-utils/jsonpatch';
 interface Lib {
     library: Library;
 }
