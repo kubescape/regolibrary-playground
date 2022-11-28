@@ -219,8 +219,8 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     var statusBadge = <div></div>;
     if (status) {
         var color = "warning"
-        if (status == "Pass") { color = "success" }
-        if (status == "Fail") { color = "error" }
+        if (status === "Pass") { color = "success" }
+        if (status === "Fail") { color = "error" }
         statusBadge = <Chip label={status} color={color} />
     }
 
