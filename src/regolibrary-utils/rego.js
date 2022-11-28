@@ -1,30 +1,19 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
-import bundle_url from "./bin/kubescape_regolibrary_bundle_wasm.tar.gz";
-import frameworks_metadata from "./bin/frameworks.json";
-import controls_metadata from "./bin/controls.json";
+import pako from "pako";
+import untar from "js-untar";
 
-const pako = require("pako");
-const untar = require("js-untar");
+const regolibraryPrefix = "armo_builtins";
+const rulesPrefix = "rules";
+const controlsPrefix = "controls";
+const frameworksPrefix = "frameworks";
+const denyRule = "deny";
+const rawRule = "raw";
+const filterRule = "filter";
 
-
-const regolibrary_prefix = "armo_builtins";
-const rules_prefix = "rules";
-const controls_prefix = "controls";
-const frameworks_prefix = "frameworks";
-const deny_rule = "deny";
-const raw_rule = "raw";
-const filter_rule = "filter";
-
-
-async function myFetch(url) {
-  const response = await fetch(url, {headers: {'X-Requested-With': 'https://github.com'}});
-  return response;
-}
 
 async function NewLibrary() {
   var l = new Library();
   await l.load();
-  await l.load_metadata();
   return l;
 };
 
@@ -37,64 +26,52 @@ export class Library {
     this.frameworks = {};
   }
 
-  static _normalize_rule_name(rule_name) {
-    return rule_name.replace(/[^a-zA-Z0-9]/g, "_");
+  static NormalizeRuleName(ruleName) {
+    return ruleName.replace(/[^a-zA-Z0-9]/g, "_");
   }
 
-  format_entrypoint(entrypoint) {
+  static formatEntrypoint(entrypoint) {
     entrypoint.forEach(function (entry, index, theArray) {
-      theArray[index] = Library._normalize_rule_name(entry);
+      theArray[index] = Library.NormalizeRuleName(entry);
     });
     return entrypoint.join("/");
   }
 
-  async load_metadata() {
-    const frameworks = frameworks_metadata;
-    const controls = controls_metadata;
+  loadMetadata() {
+    const frameworks = {};
+    const controls = {};
 
-    for (var control of controls) {
-      const normalized = Library._normalize_rule_name(control.id);
-      if (this.controls[normalized] === undefined) {
-        continue;
-      }
-
-      // Add metadata to control
-      control.eval = this.controls[normalized].eval;
-      this.controls[control.id] = control;
-
-      // Set the real control ID as the key
-      if (normalized != control.id) {
-        delete this.controls[normalized];
-      }
+    // Get contorls metadata
+    const ctrlsRes = this._evaluate(Library.formatEntrypoint([regolibraryPrefix, controlsPrefix]), []);
+    for (const [entry, results] of Object.entries(ctrlsRes)) {
+      const control = results[denyRule];
+      delete control['result'];
+      control['eval'] = (input) => this.evaluateControl(entry, input);
+      controls[control.controlID] = control;
     }
 
-    for (var framework of frameworks) {
-      const normalized = Library._normalize_rule_name(framework.name);
-      if (this.frameworks[normalized] === undefined) {
-        continue;
-      }
-
-      // Add metadata to framework
-      framework.eval = this.frameworks[normalized].eval;
-      this.frameworks[framework.name] = framework;
-
-      // Set the real framework name as the key
-      if (normalized != framework.name) {
-        delete this.frameworks[normalized];
-      }
+    // Get frameworks metadata
+    const fwRes = this._evaluate(Library.formatEntrypoint([regolibraryPrefix, frameworksPrefix]), []);
+    for (const [entry, results] of Object.entries(fwRes)) {
+      const framework = results[denyRule];
+      delete framework['result'];
+      framework['eval'] = (input) => this.evaluateFramework(entry, input);
+      frameworks[framework.name] = framework;
     }
+
+    this.controls = controls;
+    this.frameworks = frameworks;
   }
 
-  async load() {
-    const response = await myFetch(bundle_url,);
-    const buffer = await response.arrayBuffer();
-    const tar = pako.inflate(buffer);
+  async load(bundleTarGzBuffer) {
+
+    const tar = pako.inflate(bundleTarGzBuffer);
     const files = await untar(tar.buffer);
 
     // Most of the times the policy is the last file in the tar
-    const last_file = files[files.length - 1];
-    if (last_file.name == "/policy.wasm") {
-      this.policy = await loadPolicy(last_file.buffer, 8);
+    const lastFile = files[files.length - 1];
+    if (lastFile.name == "/policy.wasm") {
+      this.policy = await loadPolicy(lastFile.buffer, 8);
     }
 
     for (const file of files) {
@@ -118,43 +95,38 @@ export class Library {
       var data = JSON.parse(new TextDecoder().decode(this.data));
       data.settings = {
         verbose: false,
-        metadata: false,
+        metadata: true,
       };
       this.policy.setData(this.data);
     }
 
+    // Load controls and frameworks with thei metadata
+    this.loadMetadata();
+
+    // Load rules
     for (const entry in this.policy.entrypoints) {
       const splitted = entry.split("/");
-      if (splitted[0] != regolibrary_prefix) {
+      if (splitted[0] != regolibraryPrefix || splitted.length < 3) {
         continue;
       }
 
-      if (splitted.length < 3) { continue; }
       const typ = splitted[1];
       const name = splitted[2];
-      switch (typ) {
-        case rules_prefix:
-          this.rules[name] = { eval: (input) => this.evaluate_rule(name, input) };
-          break;
-        case controls_prefix:
-          this.controls[name] = { eval: (input) => this.evaluate_control(name, input) };
-          break;
-        case frameworks_prefix:
-          this.frameworks[name] = { eval: (input) => this.evaluate_framework(name, input) };
-          break;
-      }
+      if (typ != rulesPrefix) { continue; }
+      this.rules[name] = { eval: (input) => this.evaluateRule(name, input) };
+
     }
   }
 
-
+  // TODO: make this async
   _evaluate(entrypoint, input) {
     if (this.policy == null) {
       throw "policy not loaded";
     }
 
     // Check if entrypoint exists
-    var entrypoint_num = this.policy.entrypoints[entrypoint];
-    if (entrypoint_num === undefined) {
+    var entrypointNum = this.policy.entrypoints[entrypoint];
+    if (entrypointNum === undefined) {
       throw "entrypoint not found";
     }
 
@@ -163,62 +135,37 @@ export class Library {
       input = [input];
     }
 
-    var rs = this.policy.evaluate(input, entrypoint_num);
+    var rs = this.policy.evaluate(input, entrypointNum);
 
-    return rs[0].result.deny;
+    return rs[0].result;
   }
 
-  evaluate_rule(rule_name, input) {
+  _evaluateRegolibraryObject(typ, name, input) {
     var enrtypoint = [
-      regolibrary_prefix,
-      rules_prefix,
-      rule_name,
-      raw_rule,
+      regolibraryPrefix,
+      typ,
+      name,
     ];
     try {
-      return this._evaluate(this.format_entrypoint(enrtypoint), input);
+      return this._evaluate(this.formatEntrypoint(enrtypoint), input)[denyRule];
     } catch (error) {
       if (error == "entrypoint not found") {
-        throw `rule not found: ${rule_name}`;
-      } else {
-        throw error;
+        throw `${typ} not found: ${name}`;
       }
+      throw error;
     }
   }
 
-  evaluate_control(control_name, input) {
-    var enrtypoint = [
-      regolibrary_prefix,
-      controls_prefix,
-      control_name,
-    ];
-    try {
-      return this._evaluate(this.format_entrypoint(enrtypoint), input);
-    } catch (error) {
-      if (error == "entrypoint not found") {
-        throw `control not found: ${control_name}`;
-      } else {
-        throw error;
-      }
-    }
+  evaluateRule(ruleName, input) {
+    return this._evaluateRegolibraryObject(rulesPrefix, ruleName, input);
   }
 
-  evaluate_framework(framework_name, input) {
-    var enrtypoint = [
-      regolibrary_prefix,
-      frameworks_prefix,
-      framework_name,
-    ];
-    try {
-      var rs = this._evaluate(this.format_entrypoint(enrtypoint), input);
-      return rs;
-    } catch (error) {
-      if (error == "entrypoint not found") {
-        throw `framework not found: ${framework_name}`;
-      } else {
-        throw error;
-      }
-    }
+  evaluateControl(controlID, input) {
+    return this._evaluateRegolibraryObject(controlsPrefix, controlID, input);
+  }
+
+  evaluateFramework(frameworkName, input) {
+    return this._evaluateRegolibraryObject(frameworksPrefix, frameworkName, input);
   }
 }
 

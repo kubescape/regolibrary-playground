@@ -8,6 +8,8 @@ import { useState } from "react";
 import { Library } from "../regolibrary-utils/rego";
 import { Typography } from "@mui/material";
 import recursiveJsonPatch from '../regolibrary-utils/jsonpatch';
+import bundleUrl from './bin/kubescape_regolibrary_bundle_wasm.tar.gz'
+
 interface Lib {
     library: Library;
 }
@@ -16,7 +18,7 @@ function patchObject(obj: any, path: string, value: any) {
     try {
         const fixed = recursiveJsonPatch(obj, path, value);
         return fixed;
-    } catch(e){
+    } catch (e) {
         console.log("Failed to path object: ", obj, path, value);
     }
 }
@@ -49,8 +51,9 @@ const KubescapeRegoLibrary = ({ }) => {
         )
     }
     if (!loaded) {
-        lib.library.load()
-            .then(() => lib.library.load_metadata())
+        fetch(bundleUrl)
+            .then(response => response.arrayBuffer())
+            .then(bytes => lib.library.load(bytes))
             .then(() => setLoaded(true))
             .catch((err) => { console.log(err); setLoadError(err) });
     }
@@ -181,7 +184,7 @@ const KubescapeRegoLibrary = ({ }) => {
                 >
 
                     <CodeEditor
-                        onExec={(target.scope && target.value) ? onEval: null}
+                        onExec={(target.scope && target.value) ? onEval : null}
                         onApplyChanges={onApplyFix}
                         status={status}
                         fixed={fix}
