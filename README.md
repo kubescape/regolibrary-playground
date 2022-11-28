@@ -1,9 +1,13 @@
 # React POC of [Kubescape Regolibrary](https://github.com/kubescape/regolibrary) playground
-[Playgound](https://kubescape.github.io/regolibrary-playground/)
+<p align="center">
+<a href="https://kubescape.github.io/regolibrary-playground/">Playground</a>
+<br/><br/>
+<img src="docs/usecase.gif">
+<br/><br/>
+</p>
 
-
-# Updating
-## k8s schemas
+## Updating
+### k8s schemas
 To update the k8s json schema, run the following command:
 ```
 pip install openapi2jsonschema
@@ -11,18 +15,18 @@ openapi2jsonschema --stand-alone --kubernetes --strict https://raw.githubusercon
 python scripts/k8s_schema.py schemas -o src/components/bin/k8s-schema.json
 ```
 
-## Regolibrary
+### Regolibrary
 To update the regolibrary, download the latest version from [here](https://github.com/kubescape/regolibrary/releases/latest/download/kubescape_regolibrary_bundle_wasm.tar.gz) and extract it to `src/components/bin` folder.
 
-# Deployment
+## Deployment
 To deploy the app, run the following command:
 ```
 npm run deploy
 ```
 For more information, see [this](https://create-react-app.dev/docs/deployment/#github-pages) page.
 
-# TODO
-## Must
+## TODO
+### Must
 - [ ] Clean the messy code
 - [ ] Use tree-shaking to reduce the bundle size
 - [ ] Complete the typescript migration, and fix all the errors / warnings
@@ -30,7 +34,7 @@ For more information, see [this](https://create-react-app.dev/docs/deployment/#g
 - [ ] Make the editor component sticky instead of fixed
 - [ ] Add a loading indicator to whole KubescapeRegolibraryComponent, instead of the current one (only text)
 
-## Nice to have
+### Nice to have
 - [ ] Add tests
 - [ ] Improve the UI/UX
 - [ ] Support custom controls inputs
