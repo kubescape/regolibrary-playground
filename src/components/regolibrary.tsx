@@ -6,7 +6,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { useState } from "react";
 import { Library } from "../regolibrary-utils/rego";
-import { Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import recursiveJsonPatch from '../regolibrary-utils/jsonpatch';
 import bundleUrl from './bin/kubescape_regolibrary_bundle_wasm.tar.gz'
 
@@ -41,11 +41,6 @@ const KubescapeRegoLibrary = ({ }) => {
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" component="div" gutterBottom>
                     Error loading library.
-                    It maybe problem with the CORS policy.
-
-                    This is an ALPHA version.
-                    Please visit https://cors-anywhere.herokuapp.com/
-                    and click on the button "Request temporary access to the demo server".
                 </Typography>
             </Box>
         )
@@ -98,7 +93,7 @@ const KubescapeRegoLibrary = ({ }) => {
         for (const control of failedControls) {
             for (const r of control.results) {
 
-                if (!r.fixPaths || r.fixPaths.length == 0) {
+                if (!r.fixPaths || r.fixPaths.length === 0) {
                     continue;
                 }
 
@@ -179,7 +174,6 @@ const KubescapeRegoLibrary = ({ }) => {
                         top: 20,
                         right: 20,
                         zIndex: 1000,
-
                     }}
                 >
 

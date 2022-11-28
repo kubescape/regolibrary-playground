@@ -5,7 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Grid, Paper } from "@mui/material";
+import Paper from "@mui/material/Paper";
 import FlipIcom from '@mui/icons-material/Flip';
 import Fab from '@mui/material/Fab';
 import PropTypes from 'prop-types';

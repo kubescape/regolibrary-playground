@@ -19,9 +19,16 @@ To deploy the app, run the following command:
 ```
 npm run deploy
 ```
+For more information, see [this](https://create-react-app.dev/docs/deployment/#github-pages) page.
 
 # TODO
-- [ ] Add more tests
-- [ ] support yaml k8s json schema
-- [ ] clean the messy code
-- [ ] use tree-shaking to reduce the bundle size
+This list is not ordered in any particular way.
+- [ ] Add tests
+- [ ] Support yaml k8s json schema
+- [ ] Clean the messy code
+- [ ] Use tree-shaking to reduce the bundle size
+- [ ] Add failed path support (currently only fix path is supported)
+- [ ] Extract the regolibrary utils to a separate package
+- [ ] Complete the typescript migration, and fix all the errors / warnings
+- [ ] Use material-ui Grid instead of Box with flex styling
+- [ ] Make the regolibrary eval function async (maybe using web workers)
