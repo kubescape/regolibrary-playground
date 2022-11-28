@@ -182,7 +182,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     if (!fix) {
         editor = <Editor
             height="70vh"
-            width="80vh"
+            width="45vw"
             language={language}
             value={code}
             onChange={(value) => setCode(value)}
@@ -190,7 +190,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     } else {
         editor = <MonacoDiffEditor
             height="70vh"
-            width="80vh"
+            width="45vw"
             value={fix}
             original={code}
             language={language}
