@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/regolibrary-playground/static/css/main.a31c1e06.css",
+    "main.js": "/regolibrary-playground/static/js/main.8319a631.js",
+    "static/js/496.0c30a035.chunk.js": "/regolibrary-playground/static/js/496.0c30a035.chunk.js",
+    "static/media/kubescape_regolibrary_bundle_wasm.tar.gz": "/regolibrary-playground/static/media/kubescape_regolibrary_bundle_wasm.tar.c2477a1b78ed8ec039e9.gz",
+    "static/media/codicon.ttf": "/regolibrary-playground/static/media/codicon.b797181c93b3755f4fa1.ttf",
+    "static/media/Controls.md": "/regolibrary-playground/static/media/Controls.cef1a0e058df09b52ef9.md",
+    "index.html": "/regolibrary-playground/index.html",
+    "static/media/Frameworks.md": "/regolibrary-playground/static/media/Frameworks.16517af87c069c55cf7f.md",
+    "main.a31c1e06.css.map": "/regolibrary-playground/static/css/main.a31c1e06.css.map",
+    "main.8319a631.js.map": "/regolibrary-playground/static/js/main.8319a631.js.map",
+    "496.0c30a035.chunk.js.map": "/regolibrary-playground/static/js/496.0c30a035.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a31c1e06.css",
+    "static/js/main.8319a631.js"
+  ]
+}
