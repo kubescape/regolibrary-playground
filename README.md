@@ -37,6 +37,7 @@ For more information, see [this](https://create-react-app.dev/docs/deployment/#g
 - [ ] Investigate why somethims the eval button is not working
 - [ ] Use custom monaco editor component and then:
     - [ ] Support yaml k8s json schema
+    - [ ] Move default language to yaml
     - [ ] Enable ctrl-z by using the same monaco model for both editors (diff and regular)
     - [ ] Add instance scan on change and mark the errors in the editor
 - [ ] Move the markdown generators for controls and frameworks to the regolibrary-utils
@@ -52,5 +53,8 @@ For more information, see [this](https://create-react-app.dev/docs/deployment/#g
 - [ ] Support sharing by:
     - Start using Hash router (the only one supported by github pages)
     - Use the url params to store the state, including the yaml itself (as base64)
+- [ ] Add tooltips
+- [ ] Add dark mode?
 - [ ] Add option to export the scan results to json?
+- [ ] Change the language selector label to "Format"?
 
