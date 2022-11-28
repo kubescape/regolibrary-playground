@@ -1,13 +1,9 @@
 import * as JSONPatch from 'fast-json-patch';
 import { JSONPath } from 'jsonpath-plus';
 
-function jsonPathExist(obj, path) {
-    return JSONPath.query(origin, path).length > 0;
-}
-
 export default function recursiveJsonPatch(origin, path, val) {
-    if (path == "") {
-        throw "Cannot path object";
+    if (path === "") {
+        return Object.assign(new Error("Cannot path object: empty path"));
     }
 
     var patchPath = path;
@@ -40,7 +36,6 @@ export default function recursiveJsonPatch(origin, path, val) {
         prevJsonPath = path.slice(0, path.lastIndexOf("."));
     }
 
-    const prevPath = splitted.slice(0, splitted.length - 1).join('/');
     const prevExists = JSONPath({ path: prevJsonPath, json: origin });
     if (!isNaN(prev)) {
         if (prevExists.length > 0) {

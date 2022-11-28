@@ -70,15 +70,15 @@ export class Library {
 
     // Most of the times the policy is the last file in the tar
     const lastFile = files[files.length - 1];
-    if (lastFile.name == "/policy.wasm") {
+    if (lastFile.name === "/policy.wasm") {
       this.policy = await loadPolicy(lastFile.buffer, 8);
     }
 
     for (const file of files) {
-      if (file.name == "/policy.wasm") {
+      if (file.name === "/policy.wasm") {
         this.policy = await loadPolicy(file.buffer, 8);
       }
-      if (file.name == "/data.json") {
+      if (file.name === "/data.json") {
         this.data = file.buffer;
       }
 
@@ -88,7 +88,7 @@ export class Library {
     }
 
     if (this.policy == null) {
-      throw "failed to load policy";
+      throw Object.assign(new Error("failed to load policy"));
     }
 
     if (this.data != null) {
@@ -106,13 +106,13 @@ export class Library {
     // Load rules
     for (const entry in this.policy.entrypoints) {
       const splitted = entry.split("/");
-      if (splitted[0] != regolibraryPrefix || splitted.length < 3) {
+      if (splitted[0] !== regolibraryPrefix || splitted.length < 3) {
         continue;
       }
 
       const typ = splitted[1];
       const name = splitted[2];
-      if (typ != rulesPrefix) { continue; }
+      if (typ !== rulesPrefix) { continue; }
       this.rules[name] = { eval: (input) => this.evaluateRule(name, input) };
 
     }
@@ -121,13 +121,13 @@ export class Library {
   // TODO: make this async
   _evaluate(entrypoint, input) {
     if (this.policy == null) {
-      throw "policy not loaded";
+      throw Object.assign(new Error( "policy not loaded"));
     }
 
     // Check if entrypoint exists
     var entrypointNum = this.policy.entrypoints[entrypoint];
     if (entrypointNum === undefined) {
-      throw "entrypoint not found";
+      throw Object.assign(new Error( "entrypoint not found"));
     }
 
     // Wrap input in array if it's not already
@@ -147,10 +147,10 @@ export class Library {
       name,
     ];
     try {
-      return this._evaluate(this.formatEntrypoint(enrtypoint), input)[denyRule];
+      return this._evaluate(Library.formatEntrypoint(enrtypoint), input)[denyRule];
     } catch (error) {
-      if (error == "entrypoint not found") {
-        throw `${typ} not found: ${name}`;
+      if (error === "entrypoint not found") {
+        throw Object.assign(new Error(`${typ} not found: ${name}`));
       }
       throw error;
     }

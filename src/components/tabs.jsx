@@ -8,13 +8,7 @@ import MarkdownPreview from '@uiw/react-markdown-preview';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useMemo } from "react";
-import Divider from '@mui/material/Divider';
 
-import Chip from '@mui/material/Chip';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { ControlsDocs, FrameworksDocs } from '../regolibrary-utils/docs.tsx';
 
 // js-yaml is a library for parsing YAML
@@ -146,7 +140,7 @@ export default function BasicTabs({ library, onSelect }) {
     const valToType = useMemo(() => ({
         0: "frameworks",
         1: "controls",
-    }));
+    }), []);
 
     const [tabNum, setTabNum] = React.useState(0);
 
@@ -160,8 +154,10 @@ export default function BasicTabs({ library, onSelect }) {
         const entries = Object.entries(library.controls).map(([k, v]) => ({ controlID: k, name: v.name }))
         entries.sort((a, b) => a.controlID.localeCompare(b.controlID));
         return entries;
-    });
-    const frameworksOptions = useMemo(() => { return Object.entries(library.frameworks).map(([k, v]) => ({ frameworkID: k, name: v.name })) });
+    }, [library.controls]);
+    const frameworksOptions = useMemo(() => { 
+        return Object.entries(library.frameworks).map(([k, v]) => ({ frameworkID: k, name: v.name })) 
+    }, [library.frameworks]);
 
 
     const handleTabChange = (event, newTabNum) => {
@@ -180,6 +176,8 @@ export default function BasicTabs({ library, onSelect }) {
                     val = selectedControl.controlID;
                 }
                 break;
+            default:
+                console.log("Unknown type", typ);
         };
         onSelect({
             scope: typ,
