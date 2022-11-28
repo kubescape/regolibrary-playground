@@ -8,7 +8,7 @@ To update the k8s json schema, run the following command:
 ```
 pip install openapi2jsonschema
 openapi2jsonschema --stand-alone --kubernetes --strict https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
-python scripts/k8s_schema.py schemas -o src/components/k8s-schema.json
+python scripts/k8s_schema.py schemas -o src/components/bin/k8s-schema.json
 ```
 
 ## Regolibrary
@@ -22,13 +22,35 @@ npm run deploy
 For more information, see [this](https://create-react-app.dev/docs/deployment/#github-pages) page.
 
 # TODO
-This list is not ordered in any particular way.
-- [ ] Add tests
-- [ ] Support yaml k8s json schema
+## Must
 - [ ] Clean the messy code
 - [ ] Use tree-shaking to reduce the bundle size
-- [ ] Add failed path support (currently only fix path is supported)
-- [ ] Extract the regolibrary utils to a separate package
 - [ ] Complete the typescript migration, and fix all the errors / warnings
 - [ ] Use material-ui Grid instead of Box with flex styling
+- [ ] Make the editor component sticky instead of fixed
+- [ ] Add a loading indicator to whole KubescapeRegolibraryComponent, instead of the current one (only text)
+
+## Nice to have
+- [ ] Add tests
+- [ ] Improve the UI/UX
+- [ ] Support custom controls inputs
+- [ ] Investigate why somethims the eval button is not working
+- [ ] Use custom monaco editor component and then:
+    - [ ] Support yaml k8s json schema
+    - [ ] Enable ctrl-z by using the same monaco model for both editors (diff and regular)
+    - [ ] Add instance scan on change and mark the errors in the editor
+- [ ] Move the markdown generators for controls and frameworks to the regolibrary-utils
+- [ ] Extract the regolibrary utils to a separate package
 - [ ] Make the regolibrary eval function async (maybe using web workers)
+- [ ] Add failed path support (currently only fix path is supported)
+- [ ] Add three dots menu to the rego editor, with:
+    - [ ] Download
+    - [ ] Copy to clipboard
+    - [ ] Format
+    - [ ] Wrap lines
+    - [ ] (only in diff mode) Toggle inline / side-by-side
+- [ ] Support sharing by:
+    - Start using Hash router (the only one supported by github pages)
+    - Use the url params to store the state, including the yaml itself (as base64)
+- [ ] Add option to export the scan results to json?
+

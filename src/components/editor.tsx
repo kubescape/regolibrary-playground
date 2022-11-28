@@ -14,7 +14,7 @@ import { MonacoDiffEditor } from 'react-monaco-editor';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import Chip from '@mui/material/Chip';
 import { loader } from "@monaco-editor/react";
-import K8Schema from './k8s-schema.json';
+import K8Schema from './bin/k8s-schema.json';
 
 
 // Json k8s schema
