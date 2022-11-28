@@ -2,7 +2,7 @@
   "name": "kubescape-regolibrary-playground",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://shm12.github.io/regolibrary-playground",
+  "homepage": "http://kubescape.github.io/regolibrary-playground",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
