@@ -141,6 +141,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     const [code, setCode] = React.useState(encode(value, lang));
     const [fix, setFix] = React.useState(null);
     const [language, setLanguage] = React.useState(lang);
+    const [diffSideBySide, setDiffSideBySide] = React.useState(true); // TODO: add a button
 
     if (fixed && !fix) {
         setFix(encode(fixed, language));
@@ -179,12 +180,24 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
     };
 
     var editor = <div></div>;
+    const monacoOptions = {
+        scrollBeyondLastLine: false,
+        minimap: {
+            enabled: false,
+        },
+    }
+
+    const diffOptions = {
+        ...monacoOptions,
+        renderSideBySide: diffSideBySide,
+    }
     if (!fix) {
         editor = <Editor
             height="70vh"
             width="45vw"
             language={language}
             value={code}
+            options={monacoOptions}
             onChange={(value) => setCode(value)}
         />
     } else {
@@ -194,6 +207,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
             value={fix}
             original={code}
             language={language}
+            options={diffOptions}
             onChange={(value) => setFix(value)}
         />
     }
@@ -243,7 +257,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    p: 2,
+                    paddingTop:2
                 }}
             >
                 <LanguageSelect
