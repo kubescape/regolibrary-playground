@@ -23,7 +23,7 @@ python scripts/k8s_schema.py schemas -o src/components/bin/k8s-schema.json
 ```
 
 ### Regolibrary
-To update the regolibrary, download the latest version from [here](https://github.com/kubescape/regolibrary/releases/latest/download/kubescape_regolibrary_bundle_wasm.tar.gz) and extract it to `src/components/bin` folder.
+To update the regolibrary, download the latest version from [here](https://github.com/kubescape/regolibrary/releases/latest/download/kubescape_regolibrary_bundle_wasm.tar.gz) and copy it to `src/components/bin` folder.
 
 ## Deployment
 To deploy the app, run the following command:
