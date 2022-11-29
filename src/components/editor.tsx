@@ -39,12 +39,12 @@ function LanguageSelect({ options, value, onChange }) {
     return (
         <Box sx={{ minWidth: 120 }}>
             <FormControl >
-                <InputLabel id="demo-simple-select-label">Language</InputLabel>
+                <InputLabel id="input-format-select-label">Format</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="input-format-select-label"
+                    id="input-format-select"
                     value={val}
-                    label="Language"
+                    label="Format"
                     onChange={handleChange}
                 >
                     {items}
