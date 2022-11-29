@@ -39,7 +39,7 @@ For more information, see [this](https://create-react-app.dev/docs/deployment/#g
 - [ ] Complete the typescript migration, and fix all the errors / warnings
 - [ ] Use material-ui Grid instead of Box with flex styling
 - [ ] Make the editor component sticky instead of fixed
-- [ ] Add a loading indicator to whole KubescapeRegolibraryComponent, instead of the current one (only text)
+- [x] Add a loading indicator to whole KubescapeRegolibraryComponent, instead of the current one (only text)
 
 ### Nice to have
 - [ ] Add tests
