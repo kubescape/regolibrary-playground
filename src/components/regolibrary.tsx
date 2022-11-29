@@ -2,13 +2,15 @@ import CodeEditor from "./editor.tsx";
 import BasicTabs from "./tabs";
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
 
 import { useState } from "react";
 import { Library } from "../regolibrary-utils/rego";
 import Typography from "@mui/material/Typography";
 import recursiveJsonPatch from '../regolibrary-utils/jsonpatch';
 import bundleUrl from './bin/kubescape_regolibrary_bundle_wasm.tar.gz'
+import Backdrop from '@mui/material/Backdrop';
+
+import Spinner from 'react-spinkit';
 
 interface Lib {
     library: Library;
@@ -127,26 +129,6 @@ const KubescapeRegoLibrary = ({ }) => {
     }
 
 
-    if (!loaded) {
-        return (
-            <Box
-                sx={{
-                    // Center the children
-                    alignSelf: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Typography variant="h4" component="div" gutterBottom>
-                    The Kubescape Rego Library is loading...
-                </Typography>
-                <LinearProgress />
-            </Box>
-        );
-    }
-
     return (
         <Box
             sx={{
@@ -156,6 +138,29 @@ const KubescapeRegoLibrary = ({ }) => {
                 p: 2,
             }}
         >
+            {/* Loading animation */}
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={!loaded}
+            >
+                <Box
+                    sx={{
+                        // center the spinner
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                >
+                    <Spinner name="cube-grid" color="#3f51b5"
+                        style={{
+                            height: '100px',
+                            width: '100px',
+                        }} />
+                </Box>
+            </Backdrop>
+
+            {/* Real comopnent */}
             <BasicTabs
                 library={lib.library}
                 onSelect={onTargetChange}

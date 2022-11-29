@@ -6,6 +6,13 @@
 <br/><br/>
 </p>
 
+## Run locally
+
+```bash
+npm install
+npm start
+```
+
 ## Updating
 ### k8s schemas
 To update the k8s json schema, run the following command:
