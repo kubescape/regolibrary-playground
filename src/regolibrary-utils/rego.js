@@ -1,6 +1,7 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import pako from "pako";
 import untar from "js-untar";
+import isArrayBuffer from 'is-array-buffer';
 
 const regolibraryPrefix = "armo_builtins";
 const rulesPrefix = "rules";
@@ -94,10 +95,10 @@ export class Library {
     if (this.data != null) {
       var data = JSON.parse(new TextDecoder().decode(this.data));
       data.settings = {
-        verbose: false,
+        verbose: true,
         metadata: true,
       };
-      this.policy.setData(this.data);
+      this.policy.setData(data);
     }
 
     // Load controls and frameworks with thei metadata
@@ -121,13 +122,13 @@ export class Library {
   // TODO: make this async
   _evaluate(entrypoint, input) {
     if (this.policy == null) {
-      throw Object.assign(new Error( "policy not loaded"));
+      throw Object.assign(new Error("policy not loaded"));
     }
 
     // Check if entrypoint exists
     var entrypointNum = this.policy.entrypoints[entrypoint];
     if (entrypointNum === undefined) {
-      throw Object.assign(new Error( "entrypoint not found"));
+      throw Object.assign(new Error("entrypoint not found"));
     }
 
     // Wrap input in array if it's not already
@@ -166,6 +167,47 @@ export class Library {
 
   evaluateFramework(frameworkName, input) {
     return this._evaluateRegolibraryObject(frameworksPrefix, frameworkName, input);
+  }
+
+  _updateData(updater) {
+    if (isArrayBuffer(this.data)) {
+      this.data = JSON.parse(new TextDecoder().decode(this.data));
+    }
+    updater();
+    this.policy.setData(this.data);
+  }
+
+  setResultLevelVerbose() {
+    this._updateData(() => {
+      this.data.settings.verbose = true;
+    });
+  }
+
+  setResultLevelNormal() {
+    this._updateData(() => {
+      this.data.settings.verbose = false;
+      this.data.settings.metadata = true;
+    });
+  }
+
+  setResultLevelMinimal() {
+    this._updateData(() => {
+      this.data.settings.verbose = false;
+      this.data.settings.metadata = false;
+    });
+  }
+
+  setControlsInputs(input) {
+    this._updateData(() => {
+      this.data.postureControlInputs = input;
+    });
+  }
+
+  getControlsInputs() {
+    if (isArrayBuffer(this.data)) {
+      this.data = JSON.parse(new TextDecoder().decode(this.data));
+    }
+    return this.data.postureControlInputs;
   }
 }
 
