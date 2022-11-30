@@ -346,7 +346,7 @@ export class Library {
 
   /**
    * A single resource, or a list of resources as input to the evaluation.
-   * @typedef {(Object.<string, any>|object.<string, any>[])} Input
+   * @typedef {(Object.<string, any>|Array.<object.<string, any>>)} Input
    */
 
   /**
