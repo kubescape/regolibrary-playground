@@ -128,72 +128,73 @@ const KubescapeRegoLibrary = ({ }) => {
         setFix(null);
     }
 
-
-    return (
+    const Loading = (open) => (<Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+    >
         <Box
             sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                p: 2,
+                // center the spinner
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
             }}
         >
-            {/* Loading animation */}
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={!loaded}
-            >
-                <Box
-                    sx={{
-                        // center the spinner
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                    }}
-                >
-                    <Spinner name="cube-grid" color="#3f51b5"
-                        style={{
-                            height: '100px',
-                            width: '100px',
-                        }} />
-                </Box>
-            </Backdrop>
+            <Spinner name="cube-grid" color="#3f51b5"
+                style={{
+                    height: '100px',
+                    width: '100px',
+                }} />
+        </Box>
+    </Backdrop>);
 
-            {/* Real comopnent */}
-            <BasicTabs
-                library={lib.library}
-                onSelect={onTargetChange}
-            />
+
+    return (
+        <React.Suspense fallback={<Loading open={true} />}>
             <Box
                 sx={{
-                    width: '100%',
-                    padding: 2,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    p: 2,
                 }}
             >
 
+
+                {/* Real comopnent */}
+                <BasicTabs
+                    library={lib.library}
+                    onSelect={onTargetChange}
+                />
                 <Box
                     sx={{
-                        // fixed position
-                        position: 'fixed',
-                        top: 20,
-                        right: 20,
-                        zIndex: 1000,
+                        width: '100%',
+                        padding: 2,
                     }}
                 >
-                    {/* Monaco is huge, so we must lazy load the editor */}
-                    <React.Suspense fallback={<div></div>}>
+
+                    <Box
+                        sx={{
+                            // fixed position
+                            position: 'fixed',
+                            top: 20,
+                            right: 20,
+                            zIndex: 1000,
+                        }}
+                    >
+                        {/* Monaco is huge, so we must lazy load the editor */}
                         <CodeEditor
                             onExec={(target.scope && target.value) ? onEval : null}
                             onApplyChanges={onApplyFix}
                             status={status}
                             fixed={fix}
                         />
-                    </React.Suspense>
 
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </React.Suspense>
     )
 }
 

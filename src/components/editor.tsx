@@ -12,6 +12,9 @@ import * as jsyaml from 'js-yaml';
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import Chip from '@mui/material/Chip';
+import init from './jsonSchemaSupport'
+
+init();
 
 
 function LanguageSelect({ options, value, onChange }) {
