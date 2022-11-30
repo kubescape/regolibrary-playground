@@ -1,4 +1,3 @@
-import Editor from "@monaco-editor/react";
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
@@ -10,20 +9,10 @@ import FlipIcom from '@mui/icons-material/Flip';
 import Fab from '@mui/material/Fab';
 import PropTypes from 'prop-types';
 import * as jsyaml from 'js-yaml';
-import { MonacoDiffEditor } from 'react-monaco-editor';
+import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import Chip from '@mui/material/Chip';
-import { loader } from "@monaco-editor/react";
-import K8Schema from './bin/k8s-schema.json';
 
-
-// Json k8s schema
-loader.init().then(monaco => {
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-        validate: true,
-        schemas: K8Schema,
-    });
-});
 
 function LanguageSelect({ options, value, onChange }) {
     const [val, setValue] = React.useState(value);
@@ -79,7 +68,7 @@ CodeEditor.propTypes = {
 }
 
 CodeEditor.defaultProps = {
-    lang: "json",
+    lang: "yaml",
     value: {
         "apiVersion": "v1",
         "kind": "Pod",
@@ -181,6 +170,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
 
     var editor = <div></div>;
     const monacoOptions = {
+        automaticLayout: true,
         scrollBeyondLastLine: false,
         minimap: {
             enabled: false,
@@ -192,7 +182,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
         renderSideBySide: diffSideBySide,
     }
     if (!fix) {
-        editor = <Editor
+        editor = <MonacoEditor
             height="70vh"
             width="45vw"
             language={language}
@@ -262,7 +252,7 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
             >
                 <LanguageSelect
                     options={languages}
-                    value={"json"}
+                    value={lang}
                     onChange={handleLanguageChange}
                 />
                 {statusBadge}

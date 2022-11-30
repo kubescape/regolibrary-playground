@@ -28,31 +28,32 @@ def iter_change_ref(d, s):
 def main(root_dir, out="k8s-schema.json"):
     with open(path.join(root_dir, "_definitions.json")) as f:
         defs = json.load(f)
+        defs = defs["definitions"]
     
     with open(path.join(root_dir, "all.json")) as f:
         a = json.load(f)
     
-    iter_change_ref(defs, "#/definitions/")
-    iter_change_ref(a, "_definitions.json#/definitions/")
+    # iter_change_ref(defs, "#/definitions/")
+    iter_change_ref(a, "_definitions.json")
+    # a["definitions"] = defs["definitions"]
 
-    defs = [{"uri": k,"fileMatch":[], "schema": v} for k, v in defs["definitions"].items()]
-
-    # remove multiple matches
-    for i in defs:
-        if "properties" not in i["schema"]:
-            a["oneOf"].remove({"$ref": i['uri']})
-    
-    for i in defs:
-        kg = i["schema"].get("x-kubernetes-group-version-kind")
+    for name, schema in defs.items():
+        # remove multiple matches
+        if "properties" not in schema:
+            a["oneOf"].remove({"$ref": f'#/definitions/{name}'})
+        
+        # Fix apiVersion + kind + group enums
+        kg = schema.get("x-kubernetes-group-version-kind")
         if kg and len(kg) == 1:
-            i["schema"]["properties"]["kind"]["enum"] = [kg[0]["kind"]]
+            schema["properties"]["kind"]["enum"] = [kg[0]["kind"]]
             kind = kg[0]["group"] + "/" + kg[0]["version"] if kg[0]["group"] else kg[0]["version"]
-            i["schema"]["properties"]["apiVersion"]["enum"] = [kind]
+            schema["properties"]["apiVersion"]["enum"] = [kind]
+        
     
-    schema = defs + [{"schema": a, "uri":"k8s", "fileMatch": ["*"]}]
-
+    a["definitions"] = defs
     with open(out, 'w') as f:
-        json.dump(schema, f)
+        json.dump(a, f)
+
 
 
 if __name__ == "__main__":
