@@ -1,6 +1,7 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import pako from "pako";
 import untar from "js-untar";
+import * as jsyaml from 'js-yaml';
 import isArrayBuffer from 'is-array-buffer';
 
 const regolibraryPrefix = "armo_builtins";
@@ -168,15 +169,24 @@ export class Library {
     }
 
     for (const file of files) {
+
+      // Load the wasm policy itself
       if (file.name === "/policy.wasm") {
         this.policy = await loadPolicy(file.buffer, 8);
       }
+
+      // Load the data channel
       if (file.name === "/data.json") {
         this.data = file.buffer;
       }
 
-      if (this.policy != null && this.data != null) {
-        break;
+      // Load rules metadata
+      if (file.name.startsWith("/rules/") && file.name.endsWith("raw.rego")) {
+        try {
+          this._loadRule(file.buffer);
+        } catch (e) {
+          console.error(new Error(`Rule doesn't contain metadata: ${file.name}`));
+        }
       }
     }
 
@@ -190,21 +200,36 @@ export class Library {
 
     // Load controls and frameworks with thei metadata
     this.loadMetadata();
-
-    // Load rules
-    for (const entry in this.policy.entrypoints) {
-      const splitted = entry.split("/");
-      if (splitted[0] !== regolibraryPrefix || splitted.length < 3) {
-        continue;
-      }
-
-      const typ = splitted[1];
-      const name = splitted[2];
-      if (typ !== rulesPrefix) { continue; }
-      this.rules[name] = { eval: (input) => this.evaluateRule(name, input) };
-
-    }
   }
+
+  /**
+   * Load the rule metadata from the OPA bundle annotations.
+   * Unfortunately, currently the Rgolibrary build does not support fetching it
+   * using simple evaluation (like the controls and frameworks).
+   * More info about OPA annotations: https://www.openpolicyagent.org/docs/latest/annotations/
+   * @param {ArrayBuffer} fileArrayBuffer A specific rule array buffer.
+   * @returns {Object} The rule metadata.
+   * @private
+   */
+  _loadRule(fileArrayBuffer) {
+    const decoder = new TextDecoder();
+    const fileString = decoder.decode(fileArrayBuffer);
+    var fileLines = fileString.split("\n");
+
+    const startLine = fileLines.findIndex(line => line === "# METADATA");
+    fileLines = fileLines.slice(startLine + 1);
+
+    const endLine = fileLines.findIndex(line => line === "");
+    fileLines = fileLines.slice(0, endLine);
+
+    const yamlSource = fileLines.map(line => line.slice(2)).join("\n");
+
+    const rule = jsyaml.load(yamlSource).custom;
+    rule["eval"] = (input) => this.evaluateRule(rule.name, input);
+
+    this.rules[rule.name] = rule;
+  }
+
 
   // TODO: make this async
   _evaluate(entrypoint, input) {
