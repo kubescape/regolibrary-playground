@@ -12,13 +12,88 @@ const rawRule = "raw";
 const filterRule = "filter";
 
 
-async function NewLibrary() {
-  var l = new Library();
-  await l.load();
-  return l;
-};
-
+/**
+ * Library is an interface to the Kubescape Rego library.
+ * It holds the controls and frameworks metadata, and it provides
+ * methods to query the library for rules, controls and frameworks.
+ * 
+ * @example
+ * // load the library
+ * const library = new Library();
+ * fetch("https://example.com/kubescape_regolibrary_bundle_wasm.tar.gz")
+ *   .then(res => res.arrayBuffer())
+ *   .then(buffer => library.loadBundle(buffer));
+ * 
+ * @example
+ * // query the library using the explicit API
+ * var rs = library.evaluateFramework("ArmoBest", input);
+ * rs = library.evaluateControl("C-0001", input);
+ * rs = library.evaluateRule("example-rule", input);
+ * 
+ * @example
+ * // query the library using the implicit API
+ * var rs = library.rules["example-rule"].eval(input);
+ * rs = library.controls["C-0001"].eval(input);
+ * rs = library.frameworks["ArmoBest"].eval(input);
+ * 
+ * // this enable evaluating without even knowing the type of the target
+ * // for example
+ * var target = {"kind": "frameworks", "name": "ArmoBest"};
+ * var rs = library[target.kind][target.name].eval(input);
+ * 
+ */
 export class Library {
+
+  /**
+   * Eval function for a regolibrary object. It can be a rule, control or framework.
+   * @name EvalFunction
+   * @function
+   * @param {Input} input The input to evaluate the regolibrary object with.
+   * @returns {EvaluationResult} The evaluation result.
+   */
+
+  /**
+   * Evaluable is an object that can be evaluated.
+   * @typedef {Object} Evaluable
+   * @property {EvalFunction} eval - The evaluation function.
+   */
+
+  /**
+   * The opa policy wasm instance.
+   * @private
+   */
+  policy;
+
+  /**
+   * The data channel for the evaluation.
+   * @private
+   */
+  data;
+
+  /**
+   * All the rules in the library.
+   * @type {Object.<string, Evaluable>}
+   * @public
+   * @readonly
+   */
+  rules;
+
+  /**
+   * All the controls in the library.
+   * @type {Object.<string, Evaluable>}
+   * @public
+   * @readonly
+   */
+  controls;
+
+  /**
+   * All the frameworks in the library.
+   * @type {Object.<string, Evaluable>}
+   * @public
+   * @readonly
+   */
+  frameworks;
+
   constructor() {
     this.policy = null;
     this.data = null;
@@ -64,6 +139,23 @@ export class Library {
     this.frameworks = frameworks;
   }
 
+  /**
+   * Load the framework from an OPA wasm bundle tar.gz file.
+   * @param {ArrayBuffer} bundleTarGzBuffer The bundle file as ArrayBuffer.
+   * @throws {Error} If the bundle is invalid.
+   * @returns {void}
+   * @example
+   * // from remote http URL
+   * fetch("https://example.com/kubescape_regolibrary_bundle_wasm.tar.gz")
+   *   .then(res => res.arrayBuffer())
+   *   .then(buffer => regolibrary.loadBundle(buffer))
+   * 
+   * @example
+   * // from local file
+   * const fs = require('fs');
+   * const bundleTarGzBuffer = fs.readFileSync("./kubescape_regolibrary_bundle_wasm.tar.gz");
+   * library.loadBundle(bundleTarGzBuffer);
+   */
   async load(bundleTarGzBuffer) {
 
     const tar = pako.inflate(bundleTarGzBuffer);
@@ -152,14 +244,70 @@ export class Library {
     }
   }
 
+  /**
+   * A single resource, or a list of resources as input to the evaluation.
+   * @typedef {(Object.<string, any>|object.<string, any>[])} Input
+   */
+
+  /**
+   * Rule response.
+   * @typedef {Object.<string, any>} RuleResponse
+   */
+
+  /**
+   * Verbose evaluation result.
+   * @typedef {Object[]} EvaluationResultVerbose
+   */
+
+  /**
+   * Noraml evaluation result.
+   * @typedef {Object} EvaluationResultNormal
+   * @property {(RuleResponse[]|EvaluationResultNormal[]|Object.<string, EvaluationResultNormal>)} results
+   */
+
+  /**
+   * Minimal evaluation result.
+   * @typedef {RuleResponse[]} EvaluationResultMinimal
+   */
+
+  /**
+   * Evaluation results.
+   * @typedef {(EvaluationResultVerbose|EvaluationResultNormal|EvaluationResultMinimal)} EvaluationResult
+   */
+
+  /**
+   * Controls inputs object. Some controls may require additional inputs.
+   * For example, the memory limit control requires the memory limit value.
+   * See https://hub.armosec.io/docs/configuration-parameters for more details.
+   * @typedef {Object.<string, string[]>} ControlsInputs
+   */
+
+  /**
+   * Eval a specific rule of the regolibrary.
+   * @param {string} ruleName The rule to evaulate.
+   * @param {Input} input The input to the rule.
+   * @returns {EvaluationResult} The evaluation result.
+   */
   evaluateRule(ruleName, input) {
     return this._evaluateRegolibraryObject(rulesPrefix, ruleName, input);
   }
 
+  /**
+   * Eval a specific control of the regolibrary.
+   * @param {string} controlName The control to evaulate.
+   * @param {Input} input The input to the control.
+   * @returns {EvaluationResult} The evaluation result.
+   */
   evaluateControl(controlID, input) {
     return this._evaluateRegolibraryObject(controlsPrefix, controlID, input);
   }
 
+  /**
+   * Eval a specific framework of the regolibrary.
+   * @param {string} frameworkName The framework to evaulate.
+   * @param {Input} input The input to the framework.
+   * @returns {EvaluationResult} The evaluation result.
+   */
   evaluateFramework(frameworkName, input) {
     return this._evaluateRegolibraryObject(frameworksPrefix, frameworkName, input);
   }
@@ -172,12 +320,20 @@ export class Library {
     this.policy.setData(this.data);
   }
 
+  /**
+   * Sets the results level to verbose.
+   * @returns {void}
+   */
   setResultLevelVerbose() {
     this._updateData(() => {
       this.data.settings.verbose = true;
     });
   }
 
+  /**
+   * Sets the results level to normal.
+   * @returns {void}
+   */
   setResultLevelNormal() {
     this._updateData(() => {
       this.data.settings.verbose = false;
@@ -185,6 +341,10 @@ export class Library {
     });
   }
 
+  /**
+   * Sets the results level to minimal.
+   * @returns {void}
+   */
   setResultLevelMinimal() {
     this._updateData(() => {
       this.data.settings.verbose = false;
@@ -192,12 +352,21 @@ export class Library {
     });
   }
 
+  /**
+   * Sets the control inputs.
+   * @param {ControlsInputs} inputs The control inputs.
+   * @returns {void}
+   */
   setControlsInputs(input) {
     this._updateData(() => {
       this.data.postureControlInputs = input;
     });
   }
 
+  /**
+   * Gets the current control inputs.
+   * @returns {ControlsInputs} The control inputs.
+   */
   getControlsInputs() {
     if (isArrayBuffer(this.data)) {
       this.data = JSON.parse(new TextDecoder().decode(this.data));
@@ -205,5 +374,3 @@ export class Library {
     return this.data.postureControlInputs;
   }
 }
-
-export default NewLibrary;
