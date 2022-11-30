@@ -42,6 +42,24 @@ const filterRule = "filter";
  * var target = {"kind": "frameworks", "name": "ArmoBest"};
  * var rs = library[target.kind][target.name].eval(input);
  * 
+ * 
+ * @example
+ * // Set the controls inputs
+ * // Can be done in bulk
+ * const controlsInputs = await fetch("https://example.com/stored_controls_inputs.json")
+ *                                .then(res => res.json());
+ * library.setControlsInputs(controlsInputs); // set all controls inputs to {}
+ * 
+ * // or one by one
+ * library.controlsInputs["cpu_limit_max"].set("100");
+ * 
+ * @example
+ * // Get the controls inputs
+ * // Can be done in bulk, useful for saving the controls inputs for later use
+ * const controlsInputs = library.getControlsInputs();
+ * 
+ * // or one by one
+ * const cpuLimitMax = library.controlsInputs["cpu_limit_max"].get();
  */
 export class Library {
 
@@ -72,6 +90,23 @@ export class Library {
   data;
 
   /**
+   * Contains the configurable controls inputs.
+   * More info about configurable controls:
+   * https://hub.armosec.io/docs/configuration-parameters
+   * @public
+   * @readonly
+   * @type {Object.<string, {name: string, description: string, get: function, set: function}>}
+   * @example
+   * // get the value of a configurable control
+   * const values = library.controlsInputs["cpu_request_max"].get();
+   * 
+   * @example
+   * // set the value of a configurable control
+   * library.controlsInputs["cpu_request_max"].set(["100"]);
+   */
+  controlsInputs = {};
+
+  /**
    * All the rules in the library.
    * @type {Object.<string, Evaluable>}
    * @public
@@ -98,6 +133,8 @@ export class Library {
   constructor() {
     this.policy = null;
     this.data = null;
+    this.controlsInputs = {};
+
     this.rules = {};
     this.controls = {};
     this.frameworks = {};
@@ -196,10 +233,12 @@ export class Library {
 
     if (this.data != null) {
       this.policy.setData(this.data);
+      this.data = JSON.parse(new TextDecoder().decode(this.data));
     }
 
     // Load controls and frameworks with thei metadata
     this.loadMetadata();
+    this._loadControlsInputsMetadata();
   }
 
   /**
@@ -228,6 +267,32 @@ export class Library {
     rule["eval"] = (input) => this.evaluateRule(rule.name, input);
 
     this.rules[rule.name] = rule;
+  }
+
+  /**
+   * Load the controls inputs metadata.
+   * Because of the (pure) design of this feature,
+   * the metadata for each control input field is inside the
+   * rules metadata.
+   * @private
+   * @returns {void}
+   */
+  _loadControlsInputsMetadata() {
+    for (const rule of Object.values(this.rules)) {
+      if (!rule.controlConfigInputs) { continue; }
+      for (const configOption of rule.controlConfigInputs) {
+        // Options name
+        const optionName = configOption.path.split(".").pop();
+        delete configOption.path;
+
+        // Getter and setter
+        configOption["set"] = (value) => this._setControlsInputsOption(optionName, value);
+        configOption["get"] = () => this.data.postureControlInputs[optionName];
+
+        // Add to the library
+        this.controlsInputs[optionName] = configOption;
+      }
+    }
   }
 
 
@@ -267,6 +332,16 @@ export class Library {
       }
       throw error;
     }
+  }
+
+  _setControlsInputsOption(optionName, value) {
+    if (!Array.isArray(value)) {
+      value = [value];
+    }
+    if (!value.every(i => typeof i === "string")) {
+      throw Object.assign(new Error("value must be a string or an array of strings"));
+    }
+    this._updateData(() => { this.data.postureControlInputs[optionName] = value; })
   }
 
   /**
@@ -378,7 +453,7 @@ export class Library {
   }
 
   /**
-   * Sets the control inputs.
+   * Sets the whole controls inputs object
    * @param {ControlsInputs} inputs The control inputs.
    * @returns {void}
    */
@@ -389,7 +464,7 @@ export class Library {
   }
 
   /**
-   * Gets the current control inputs.
+   * Gets the whole current control inputs object.
    * @returns {ControlsInputs} The control inputs.
    */
   getControlsInputs() {
