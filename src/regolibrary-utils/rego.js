@@ -93,12 +93,7 @@ export class Library {
     }
 
     if (this.data != null) {
-      var data = JSON.parse(new TextDecoder().decode(this.data));
-      data.settings = {
-        verbose: true,
-        metadata: true,
-      };
-      this.policy.setData(data);
+      this.policy.setData(this.data);
     }
 
     // Load controls and frameworks with thei metadata
