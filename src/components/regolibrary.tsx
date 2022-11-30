@@ -128,7 +128,7 @@ const KubescapeRegoLibrary = ({ }) => {
         setFix(null);
     }
 
-    const Loading = (open) => (<Backdrop
+    const Loading = ({open}) => (<Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
     >
@@ -160,9 +160,6 @@ const KubescapeRegoLibrary = ({ }) => {
                     p: 2,
                 }}
             >
-
-
-                {/* Real comopnent */}
                 <BasicTabs
                     library={lib.library}
                     onSelect={onTargetChange}
