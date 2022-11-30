@@ -1,19 +1,32 @@
 {
   "files": {
-    "main.css": "/regolibrary-playground/static/css/main.eab4a56f.css",
-    "main.js": "/regolibrary-playground/static/js/main.6cff4051.js",
-    "static/js/496.0c30a035.chunk.js": "/regolibrary-playground/static/js/496.0c30a035.chunk.js",
+    "main.css": "/regolibrary-playground/static/css/main.f27ac18e.css",
+    "main.js": "/regolibrary-playground/static/js/main.632caafc.js",
+    "static/js/575.2c1d3fb5.chunk.js": "/regolibrary-playground/static/js/575.2c1d3fb5.chunk.js",
+    "static/js/496.dce92690.chunk.js": "/regolibrary-playground/static/js/496.dce92690.chunk.js",
+    "static/js/894.4a0b0b88.chunk.js": "/regolibrary-playground/static/js/894.4a0b0b88.chunk.js",
+    "static/js/342.89392177.chunk.js": "/regolibrary-playground/static/js/342.89392177.chunk.js",
+    "static/css/59.6a4a6d88.chunk.css": "/regolibrary-playground/static/css/59.6a4a6d88.chunk.css",
+    "static/js/59.d0fab0ea.chunk.js": "/regolibrary-playground/static/js/59.d0fab0ea.chunk.js",
+    "yaml.worker.js": "/regolibrary-playground/yaml.worker.js",
     "static/media/kubescape_regolibrary_bundle_wasm.tar.gz": "/regolibrary-playground/static/media/kubescape_regolibrary_bundle_wasm.tar.c2477a1b78ed8ec039e9.gz",
+    "json.worker.js": "/regolibrary-playground/json.worker.js",
+    "editor.worker.js": "/regolibrary-playground/editor.worker.js",
     "static/media/codicon.ttf": "/regolibrary-playground/static/media/codicon.b797181c93b3755f4fa1.ttf",
-    "static/media/Controls.md": "/regolibrary-playground/static/media/Controls.cef1a0e058df09b52ef9.md",
+    "static/media/Controls.md": "/regolibrary-playground/static/media/Controls.75fb5a7bdc0a4d27d3f2.md",
     "index.html": "/regolibrary-playground/index.html",
-    "static/media/Frameworks.md": "/regolibrary-playground/static/media/Frameworks.16517af87c069c55cf7f.md",
-    "main.eab4a56f.css.map": "/regolibrary-playground/static/css/main.eab4a56f.css.map",
-    "main.6cff4051.js.map": "/regolibrary-playground/static/js/main.6cff4051.js.map",
-    "496.0c30a035.chunk.js.map": "/regolibrary-playground/static/js/496.0c30a035.chunk.js.map"
+    "static/media/Frameworks.md": "/regolibrary-playground/static/media/Frameworks.9a9081eea995220de9fb.md",
+    "main.f27ac18e.css.map": "/regolibrary-playground/static/css/main.f27ac18e.css.map",
+    "main.632caafc.js.map": "/regolibrary-playground/static/js/main.632caafc.js.map",
+    "575.2c1d3fb5.chunk.js.map": "/regolibrary-playground/static/js/575.2c1d3fb5.chunk.js.map",
+    "496.dce92690.chunk.js.map": "/regolibrary-playground/static/js/496.dce92690.chunk.js.map",
+    "894.4a0b0b88.chunk.js.map": "/regolibrary-playground/static/js/894.4a0b0b88.chunk.js.map",
+    "342.89392177.chunk.js.map": "/regolibrary-playground/static/js/342.89392177.chunk.js.map",
+    "59.6a4a6d88.chunk.css.map": "/regolibrary-playground/static/css/59.6a4a6d88.chunk.css.map",
+    "59.d0fab0ea.chunk.js.map": "/regolibrary-playground/static/js/59.d0fab0ea.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.eab4a56f.css",
-    "static/js/main.6cff4051.js"
+    "static/css/main.f27ac18e.css",
+    "static/js/main.632caafc.js"
   ]
 }
