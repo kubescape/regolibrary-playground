@@ -1,4 +1,3 @@
-import CodeEditor from "./editor.tsx";
 import BasicTabs from "./tabs";
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -9,8 +8,9 @@ import Typography from "@mui/material/Typography";
 import recursiveJsonPatch from '../regolibrary-utils/jsonpatch';
 import bundleUrl from './bin/kubescape_regolibrary_bundle_wasm.tar.gz'
 import Backdrop from '@mui/material/Backdrop';
-
 import Spinner from 'react-spinkit';
+
+const CodeEditor = React.lazy(() => import('./editor.tsx'));
 
 interface Lib {
     library: Library;
@@ -181,13 +181,16 @@ const KubescapeRegoLibrary = ({ }) => {
                         zIndex: 1000,
                     }}
                 >
+                    {/* Monaco is huge, so we must lazy load the editor */}
+                    <React.Suspense fallback={<div></div>}>
+                        <CodeEditor
+                            onExec={(target.scope && target.value) ? onEval : null}
+                            onApplyChanges={onApplyFix}
+                            status={status}
+                            fixed={fix}
+                        />
+                    </React.Suspense>
 
-                    <CodeEditor
-                        onExec={(target.scope && target.value) ? onEval : null}
-                        onApplyChanges={onApplyFix}
-                        status={status}
-                        fixed={fix}
-                    />
                 </Box>
             </Box>
         </Box>
