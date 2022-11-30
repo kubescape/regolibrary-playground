@@ -1,13 +1,18 @@
 {
   "files": {
     "main.css": "/regolibrary-playground/static/css/main.f27ac18e.css",
-    "main.js": "/regolibrary-playground/static/js/main.632caafc.js",
-    "static/js/575.2c1d3fb5.chunk.js": "/regolibrary-playground/static/js/575.2c1d3fb5.chunk.js",
+    "main.js": "/regolibrary-playground/static/js/main.84fed296.js",
+    "static/js/561.8889338c.chunk.js": "/regolibrary-playground/static/js/561.8889338c.chunk.js",
     "static/js/496.dce92690.chunk.js": "/regolibrary-playground/static/js/496.dce92690.chunk.js",
     "static/js/894.4a0b0b88.chunk.js": "/regolibrary-playground/static/js/894.4a0b0b88.chunk.js",
     "static/js/342.89392177.chunk.js": "/regolibrary-playground/static/js/342.89392177.chunk.js",
+    "static/js/747.9519409e.chunk.js": "/regolibrary-playground/static/js/747.9519409e.chunk.js",
+    "static/js/486.8c50595c.chunk.js": "/regolibrary-playground/static/js/486.8c50595c.chunk.js",
+    "static/js/992.f6d7ebcc.chunk.js": "/regolibrary-playground/static/js/992.f6d7ebcc.chunk.js",
+    "static/js/642.dbff1b29.chunk.js": "/regolibrary-playground/static/js/642.dbff1b29.chunk.js",
+    "static/js/308.f713e4d5.chunk.js": "/regolibrary-playground/static/js/308.f713e4d5.chunk.js",
     "static/css/59.6a4a6d88.chunk.css": "/regolibrary-playground/static/css/59.6a4a6d88.chunk.css",
-    "static/js/59.d0fab0ea.chunk.js": "/regolibrary-playground/static/js/59.d0fab0ea.chunk.js",
+    "static/js/59.77ad8b2b.chunk.js": "/regolibrary-playground/static/js/59.77ad8b2b.chunk.js",
     "yaml.worker.js": "/regolibrary-playground/yaml.worker.js",
     "static/media/kubescape_regolibrary_bundle_wasm.tar.gz": "/regolibrary-playground/static/media/kubescape_regolibrary_bundle_wasm.tar.c2477a1b78ed8ec039e9.gz",
     "json.worker.js": "/regolibrary-playground/json.worker.js",
@@ -17,16 +22,21 @@
     "index.html": "/regolibrary-playground/index.html",
     "static/media/Frameworks.md": "/regolibrary-playground/static/media/Frameworks.9a9081eea995220de9fb.md",
     "main.f27ac18e.css.map": "/regolibrary-playground/static/css/main.f27ac18e.css.map",
-    "main.632caafc.js.map": "/regolibrary-playground/static/js/main.632caafc.js.map",
-    "575.2c1d3fb5.chunk.js.map": "/regolibrary-playground/static/js/575.2c1d3fb5.chunk.js.map",
+    "main.84fed296.js.map": "/regolibrary-playground/static/js/main.84fed296.js.map",
+    "561.8889338c.chunk.js.map": "/regolibrary-playground/static/js/561.8889338c.chunk.js.map",
     "496.dce92690.chunk.js.map": "/regolibrary-playground/static/js/496.dce92690.chunk.js.map",
     "894.4a0b0b88.chunk.js.map": "/regolibrary-playground/static/js/894.4a0b0b88.chunk.js.map",
     "342.89392177.chunk.js.map": "/regolibrary-playground/static/js/342.89392177.chunk.js.map",
+    "747.9519409e.chunk.js.map": "/regolibrary-playground/static/js/747.9519409e.chunk.js.map",
+    "486.8c50595c.chunk.js.map": "/regolibrary-playground/static/js/486.8c50595c.chunk.js.map",
+    "992.f6d7ebcc.chunk.js.map": "/regolibrary-playground/static/js/992.f6d7ebcc.chunk.js.map",
+    "642.dbff1b29.chunk.js.map": "/regolibrary-playground/static/js/642.dbff1b29.chunk.js.map",
+    "308.f713e4d5.chunk.js.map": "/regolibrary-playground/static/js/308.f713e4d5.chunk.js.map",
     "59.6a4a6d88.chunk.css.map": "/regolibrary-playground/static/css/59.6a4a6d88.chunk.css.map",
-    "59.d0fab0ea.chunk.js.map": "/regolibrary-playground/static/js/59.d0fab0ea.chunk.js.map"
+    "59.77ad8b2b.chunk.js.map": "/regolibrary-playground/static/js/59.77ad8b2b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f27ac18e.css",
-    "static/js/main.632caafc.js"
+    "static/js/main.84fed296.js"
   ]
 }
