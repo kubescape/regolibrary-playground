@@ -72,9 +72,18 @@ export class Library {
    */
 
   /**
+   * Get the `controlsInput`s list for a regolibrary object. It can be a rule, control or framework.
+   * @name GetControlsInputsFunction
+   * @function
+   * @param {string} name The name/ID of the regolibrary object.
+   * @returns {Array.<ControlsInputOption>} The `controlsInput`s list.
+   */
+
+  /**
    * Evaluable is an object that can be evaluated.
    * @typedef {Object} Evaluable
    * @property {EvalFunction} eval - The evaluation function.
+   * @property {GetControlsInputsFunction} getInputs - The get `controlsInput`s list function.
    */
 
   /**
@@ -90,12 +99,17 @@ export class Library {
   data;
 
   /**
+   * A single controls input option.
+   * @typedef {{name: string, description: string, get: function, set: function}} ControlsInputOption
+   */
+
+  /**
    * Contains the configurable controls inputs.
    * More info about configurable controls:
    * https://hub.armosec.io/docs/configuration-parameters
    * @public
    * @readonly
-   * @type {Object.<string, {name: string, description: string, get: function, set: function}>}
+   * @type {Object.<string, ControlsInputOption>}
    * @example
    * // get the value of a configurable control
    * const values = library.controlsInputs["cpu_request_max"].get();
@@ -159,8 +173,9 @@ export class Library {
     const ctrlsRes = this._evaluate(Library.formatEntrypoint([regolibraryPrefix, controlsPrefix]), []);
     for (const [entry, results] of Object.entries(ctrlsRes)) {
       const control = results[denyRule];
-      delete control['result'];
+      delete control['results'];
       control['eval'] = (input) => this.evaluateControl(entry, input);
+      control['getInputs'] = () => this.getControlInputs(control.controlID);
       controls[control.controlID] = control;
     }
 
@@ -168,8 +183,12 @@ export class Library {
     const fwRes = this._evaluate(Library.formatEntrypoint([regolibraryPrefix, frameworksPrefix]), []);
     for (const [entry, results] of Object.entries(fwRes)) {
       const framework = results[denyRule];
-      delete framework['result'];
+
+      framework.controlsIDs = Object.values(framework.results).map((control) => control.controlID);
+      delete framework['results'];
+
       framework['eval'] = (input) => this.evaluateFramework(entry, input);
+      framework['getInputs'] = () => this.getFrameworkInputs(framework.name);
       frameworks[framework.name] = framework;
     }
 
@@ -232,8 +251,8 @@ export class Library {
     }
 
     if (this.data != null) {
-      this.policy.setData(this.data);
-      this.data = JSON.parse(new TextDecoder().decode(this.data));
+      // this.policy.setData(this.data);
+      this._updateData(() => { });
     }
 
     // Load controls and frameworks with thei metadata
@@ -265,6 +284,7 @@ export class Library {
 
     const rule = jsyaml.load(yamlSource).custom;
     rule["eval"] = (input) => this.evaluateRule(rule.name, input);
+    rule["getInputs"] = () => this.getRuleInputs(rule.name);
 
     this.rules[rule.name] = rule;
   }
@@ -283,6 +303,7 @@ export class Library {
       for (const configOption of rule.controlConfigInputs) {
         // Options name
         const optionName = configOption.path.split(".").pop();
+        if (this.controlsInputs[optionName]) { continue; }
         delete configOption.path;
 
         // Getter and setter
@@ -472,5 +493,66 @@ export class Library {
       this.data = JSON.parse(new TextDecoder().decode(this.data));
     }
     return this.data.postureControlInputs;
+  }
+
+  /**
+   * Gets the `ControlsInputOption`s for a specific rule.
+   * @param {string} ruleName The rule name.
+   * @returns {Array.<ControlsInputOption>} The config options.
+   * @throws {Error} If the rule is not found.
+   */
+  getRuleInputs(ruleName) {
+    const rule = this.rules[ruleName];
+    if (rule === undefined) {
+      throw Object.assign(new Error(`rule not found: ${ruleName}`));
+    }
+
+    if (rule.controlConfigInputs === undefined || rule.controlConfigInputs.length === 0) {
+      return [];
+    }
+
+    return rule.controlConfigInputs;
+  }
+
+  /**
+   * Gets the `ControlsInputOption`s for a specific control.
+   * @param {string} controlID The control ID.
+   * @returns {Array.<ControlsInputOption>} The control options.
+   * @throws {Error} If the control is not found.
+   */
+  getControlInputs(controlID) {
+    var ret = [];
+
+    const control = this.controls[controlID];
+    if (!control) {
+      throw Object.assign(new Error(`control not found: ${controlID}`));
+    }
+
+    for (const ruleName of control.rulesNames) {
+      ret = [...ret, ...this.getRuleInputs(ruleName)];
+    }
+
+    return ret.filter((item, pos) => ret.indexOf(item) === pos);
+  }
+
+  /**
+   * Gets all the `ControlsInputOption`s for a specific framework.
+   * @param {string} frameworkName The framework name.
+   * @returns {Array.<ControlsInputOption>} The framework options.
+   * @throws {Error} If the framework is not found.
+   */
+  getFrameworkInputs(frameworkName) {
+    const ret = [];
+
+    const framework = this.frameworks[frameworkName];
+    if (!framework) {
+      throw Object.assign(new Error(`framework not found: ${frameworkName}`));
+    }
+
+    for (const controlID of framework.controlsIDs) {
+      ret = [...ret, ...this.getControlInputs(controlID)];
+    }
+
+    return ret.filter((item, pos) => ret.indexOf(item) === pos);
   }
 }
