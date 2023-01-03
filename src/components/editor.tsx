@@ -46,7 +46,6 @@ function LanguageSelect({ options, value, onChange }) {
     );
 }
 
-
 LanguageSelect.propTypes = {
     options: PropTypes.array.isRequired,
     value: PropTypes.string.isRequired,
@@ -70,6 +69,7 @@ CodeEditor.propTypes = {
     onApplyChange: PropTypes.func,
 }
 
+/* default YAML file loaded configuration at landing page */
 CodeEditor.defaultProps = {
     lang: "yaml",
     value: {
@@ -264,7 +264,5 @@ function CodeEditor({ onExec, onChange, value, fixed, lang, status, onApplyChang
         </Paper>
     );
 }
-
-
 
 export default CodeEditor;
