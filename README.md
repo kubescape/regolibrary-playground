@@ -1,4 +1,4 @@
-# React POC of [Kubescape Regolibrary](https://github.com/kubescape/regolibrary) playground
+# [Kubescape Regolibrary](https://github.com/kubescape/regolibrary) Playground
 <p align="center">
 <a href="https://kubescape.github.io/regolibrary-playground/">Playground</a>
 <br/><br/>
