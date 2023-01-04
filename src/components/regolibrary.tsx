@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 import BasicTabs from "./tabs";
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -16,6 +20,12 @@ interface Lib {
     library: Library;
 }
 
+/**
+* function is marking the needed changes at the code
+* @param obj refered to the full object which needs to fixed
+* @param path refered to the specific path which needs to fixed in the file
+* @param value refered to the specific value which needs to be fixed / changed
+*/
 function patchObject(obj: any, path: string, value: any) {
     try {
         const fixed = recursiveJsonPatch(obj, path, value);
@@ -76,7 +86,6 @@ const KubescapeRegoLibrary = ({ }) => {
             }
         }
 
-
         if (target.scope === "controls") {
             const rs = results.results;
             if (rs.length > 0) {
@@ -84,26 +93,38 @@ const KubescapeRegoLibrary = ({ }) => {
                 failedControls.push(results);
             }
         }
-
+        
+        // set the scanning status
         setStatus(status);
+
+        // skip document fix if status marked as Pass 
         if (status === "Pass") {
             setFix(null);
             return;
         }
 
         var fixed = null;
+
+        // iterate by all detected failed controls in the document
         for (const control of failedControls) {
             for (const r of control.results) {
-
+                // check if the path have failed path 
                 if (!r.fixPaths || r.fixPaths.length === 0) {
-                    continue;
+                    // iterate over all failed paths
+                    for (const path of r.failedPaths) {
+                        if (fixed == null) {
+                            fixed = input;
+                        }
+                        fixed = patchObject(fixed, path, path.value);       // mark fix options at the document 
+                    }
                 }
 
+                // review all fix paths attributes which needs to be fixed
                 for (const path of r.fixPaths) {
                     if (fixed == null) {
                         fixed = input;
                     }
-                    fixed = patchObject(fixed, path.path, path.value);
+                    fixed = patchObject(fixed, path.path, path.value);      // mark the needed changes at the HTML page 
                 }
             }
         }
