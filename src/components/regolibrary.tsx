@@ -110,11 +110,13 @@ const KubescapeRegoLibrary = ({ }) => {
             for (const r of control.results) {
                 // check if the path have failed path 
                 if (!r.fixPaths || r.fixPaths.length === 0) {
-                    if (fixed == null) {
-                        fixed = input;
+                    // iterate over all failed paths
+                    for (const path of r.failedPaths) {
+                        if (fixed == null) {
+                            fixed = input;
+                        }
+                        fixed = patchObject(fixed, path, path.value);       // mark fix options at the document 
                     }
-                    fixed = patchObject(fixed, r.failedPaths[0], r.failedPaths[0].value);       // mark fix options at the document 
-                    continue;
                 }
 
                 // review all fix paths attributes which needs to be fixed
